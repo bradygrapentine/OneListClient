@@ -68,7 +68,7 @@ namespace OneListClient
             var newItem = new Item();
             newItem.Text = name;
             var updateInput = JsonConvert.SerializeObject(newItem);
-            // var buffer = System.Text.Encoding.UTF8.GetBytes(updateInput);
+            // var buffer = System.Text.Encoding.UTF8.GetBytes(updateInput);s
             // var byteContent = new ByteArrayContent(buffer);
             // byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             var updateContent = new StringContent(updateInput, Encoding.UTF8, "application/json");

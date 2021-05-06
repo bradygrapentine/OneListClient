@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Net.Http;
-using Newtonsoft.Json;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Collections.Generic;
@@ -8,6 +7,7 @@ using System.Text.Json.Serialization;
 using ConsoleTables;
 using System.Text;
 using System.Text.Unicode;
+using System.Net.Http.Headers;
 
 namespace OneListClient
 {
@@ -67,16 +67,24 @@ namespace OneListClient
             var name = Console.ReadLine();
             var newItem = new Item();
             newItem.Text = name;
-            var updateInput = JsonConvert.SerializeObject(newItem);
-            // var buffer = System.Text.Encoding.UTF8.GetBytes(updateInput);s
-            // var byteContent = new ByteArrayContent(buffer);
-            // byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            var updateContent = new StringContent(updateInput, Encoding.UTF8, "application/json");
+            var jsonBody = JsonSerializer.Serialize(newItem);
+            // We turn this into a StringContent object and indicate we are using JSON
+            // by ensuring there is a media type header of `application/json`
+            var jsonBodyAsContent = new StringContent(jsonBody);
+            jsonBodyAsContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            // var jsonBodyAsContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+            // Send the POST request to the URL and supply the JSON body
             var url = $"https://one-list-api.herokuapp.com/items?access_token={token}";
-            // var responseAsStream = await client.PostAsync(url, updateContent).Result; This line throws an error
-            var responseAsStream = client.PostAsync(url, updateContent).Result;
-            // var result = await client.PostAsync(updateInput, byteContent).Result;
-
+            var response = await client.PostAsync(url, jsonBodyAsContent);
+            // var updateInput = JsonConvert.SerializeObject(newItem);
+            // // var buffer = System.Text.Encoding.UTF8.GetBytes(updateInput);s
+            // // var byteContent = new ByteArrayContent(buffer);
+            // // byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            // var updateContent = new StringContent(updateInput, Encoding.UTF8, "application/json");
+            // var url = $"https://one-list-api.herokuapp.com/items?access_token={token}";
+            // // var responseAsStream = await client.PostAsync(url, updateContent).Result; This line throws an error
+            // var responseAsStream = client.PostAsync(url, updateContent).Result;
+            // // var result = await client.PostAsync(updateInput, byteContent).Result;
         }
         static async Task GetToDoListItemAsync(string token)
         {
@@ -109,6 +117,7 @@ namespace OneListClient
             var updateContent = new StringContent(updateInput, Encoding.UTF8, "application/json");
             var url = $"https://one-list-api.herokuapp.com/items/{id}?access_token={token}";
             var responseAsStream = await client.PutAsync(url, updateContent);
+            // could implement this like Add method is implemented
         }
         static async Task UpdateToDoListItemIncompleteAsync(string token)
         {

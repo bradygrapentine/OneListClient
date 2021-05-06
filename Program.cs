@@ -126,7 +126,9 @@ namespace OneListClient
             Console.Write("What is the id of the to-do list item that you'd like to mark incomplete? ");
             var id = Console.ReadLine();
             var updateInput = "{\"complete\": \"false\"}";
-            var updateContent = new StringContent(updateInput, Encoding.UTF8, "application/json");
+            var updateContent = new StringContent(updateInput);
+            updateContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            // var updateContent = new StringContent(updateInput, Encoding.UTF8, "application/json");
             var url = $"https://one-list-api.herokuapp.com/items/{id}?access_token={token}";
             var responseAsStream = await client.PutAsync(url, updateContent);
         }
@@ -138,6 +140,7 @@ namespace OneListClient
             Console.WriteLine("(S) See to-do list");
             Console.WriteLine("(A) Add to-do list item");
             Console.WriteLine("(G) Get to-do list item (must know item id)");
+            Console.WriteLine("(D) Delete to-do list item (must know item id)");
             Console.WriteLine("(MC) Mark to-do list item complete (must know item id)");
             Console.WriteLine("(MI) Mark to-do list item incomplete (must know item id)");
             Console.WriteLine("(Q) Quit the application");
@@ -217,7 +220,8 @@ namespace OneListClient
                         token = null;
                         break;
                     default:
-                        if (counter > 3)
+                        counter += 1;
+                        if (counter >= 3)
                         {
                             Console.Clear();
                             Console.WriteLine("Closing application...");
@@ -226,7 +230,6 @@ namespace OneListClient
                         else
                         {
                             Console.Clear();
-                            counter += 1;
                             Console.WriteLine();
                             Console.WriteLine("Try again");
                             Console.WriteLine();
